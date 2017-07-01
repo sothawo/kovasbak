@@ -16,19 +16,25 @@ class ChatUI : UI() {
     lateinit var name: String
     lateinit var chat: TextArea
 
+    /**
+     * called to initialize the UI. adds the chat display and the input controls and asks for the user name.
+     * @param vaadinRequest ignored here
+     */
     override fun init(vaadinRequest: VaadinRequest?) {
         content = VerticalLayout().apply {
             setWidth(100F, Sizeable.Unit.PERCENTAGE)
 
             chat = createChatDisplay()
             addComponent(chat)
-
             addComponent(createInputs())
-
             askForUserName()
         }
     }
 
+    /**
+     * creates the TextArea to display the chat data.
+     * @return the TextArea
+     */
     private fun createChatDisplay(): TextArea {
         return TextArea().apply {
             isReadOnly = true
@@ -37,7 +43,10 @@ class ChatUI : UI() {
         }
     }
 
-    private fun createInputs(): HorizontalLayout {
+    /**
+     * creates the input controls to enter the messages to send and the button to submit the send.
+     */
+    private fun createInputs(): Component {
         return HorizontalLayout().apply {
             setWidth(100F, Sizeable.Unit.PERCENTAGE)
 
@@ -58,6 +67,9 @@ class ChatUI : UI() {
         }
     }
 
+    /**
+     * shows a modal dialog to ask for the user name and sets the correspondig field.
+     */
     private fun askForUserName() {
         addWindow(Window("your name:").apply {
             isModal = true
@@ -85,16 +97,27 @@ class ChatUI : UI() {
         })
     }
 
+    /**
+     * sends the message from the input text fiueld to the backend.
+     */
     private fun sendMessage(message: String) {
         log.warn("{} sending message \"{}\"", name, message)
         showMessage(name, message)
     }
 
+    /**
+     * adds the received message to the display.
+     * @param user the user who sent the message
+     * @param message the message from the user
+     */
     private fun showMessage(user: String, message: String) {
         log.info("got message \"{}\" from {}", message, user)
         chat.value += user + ": " + message + "\n"
     }
 
+    /**
+     * companion object containing the logger.
+     */
     companion object {
         val log: Logger = LoggerFactory.getLogger(ChatUI::class.java)
     }
