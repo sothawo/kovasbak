@@ -50,20 +50,17 @@ class ChatUI : UI() {
         return HorizontalLayout().apply {
             setWidth(100F, Sizeable.Unit.PERCENTAGE)
 
-            val message = TextField().apply {
-                setWidth(100F, Sizeable.Unit.PERCENTAGE)
-            }
+            val message = TextField().apply { setWidth(100F, Sizeable.Unit.PERCENTAGE) }
             addComponent(message)
             setExpandRatio(message, 1F)
 
-            val button = Button("Send").apply {
+            addComponent(Button("Send").apply {
                 setClickShortcut(ShortcutAction.KeyCode.ENTER)
                 addClickListener {
                     sendMessage(message.value)
                     message.clear()
                 }
-            }
-            addComponent(button)
+            })
         }
     }
 
@@ -76,12 +73,9 @@ class ChatUI : UI() {
             isClosable = false
             isResizable = false
             content = VerticalLayout().apply {
-                val nameField = TextField().apply {
-                    focus()
-                }
+                val nameField = TextField().apply { focus() }
                 addComponent(nameField)
-
-                val button = Button("OK").apply {
+                addComponent(Button("OK").apply {
                     setClickShortcut(ShortcutAction.KeyCode.ENTER)
                     addClickListener {
                         name = nameField.value
@@ -90,8 +84,7 @@ class ChatUI : UI() {
                             log.info("name entered: {}", name)
                         }
                     }
-                }
-                addComponent(button)
+                })
             }
             center()
         })
