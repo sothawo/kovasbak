@@ -7,3 +7,7 @@ a simple chat application built with
  * Apache Kafka
  
 the project's name is built from the first letters of the language/tools/product used to build it.
+
+**Work in progress!**
+
+Kafka still missing
