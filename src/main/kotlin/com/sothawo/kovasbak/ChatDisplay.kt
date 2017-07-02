@@ -22,10 +22,9 @@ class ChatDisplay : Panel() {
     }
 
     fun addMessage(user: String, message: String) {
-        val userMessage = user + ": " + message
         text.value = when {
-            text.value.isNullOrEmpty() -> userMessage
-            else -> text.value + "<br/>" + userMessage
+            text.value.isNullOrEmpty() -> "<em>$user:</em> $message"
+            else -> text.value + "<br/><em>$user:</em> $message"
         }
         scrollTop = Int.MAX_VALUE
     }
