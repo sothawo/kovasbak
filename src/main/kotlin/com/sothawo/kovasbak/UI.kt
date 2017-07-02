@@ -1,5 +1,7 @@
 package com.sothawo.kovasbak
 
+import com.vaadin.annotations.PreserveOnRefresh
+import com.vaadin.annotations.Push
 import com.vaadin.event.ShortcutAction
 import com.vaadin.server.Sizeable
 import com.vaadin.server.VaadinRequest
@@ -8,37 +10,48 @@ import com.vaadin.spring.annotation.SpringUI
 import com.vaadin.ui.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 
 /**
  * @author P.J. Meisch (pj.meisch@sothawo.com)
  */
 @SpringUI
-class ChatUI : UI() {
+@PreserveOnRefresh
+@Push
+class ChatUI : UI(), KafkaConnectorListener {
+
     lateinit var user: String
     lateinit var chatDisplay: ChatDisplay
 
+    @Autowired
+    lateinit var kafkaConnector: KafkaConnector
+
     override fun init(vaadinRequest: VaadinRequest?) {
+        kafkaConnector.addListener(this)
+        chatDisplay = ChatDisplay()
         content = VerticalLayout().apply {
             setSizeFull()
-            chatDisplay = ChatDisplay()
             addComponents(chatDisplay, createInputs())
             setExpandRatio(chatDisplay, 1F)
         }
         askForUserName()
     }
 
+    override fun detach() {
+        kafkaConnector.removeListener(this)
+        super.detach()
+        log.info("session ended for user $user")
+    }
+
     private fun createInputs(): Component {
         return HorizontalLayout().apply {
             setWidth(100F, Sizeable.Unit.PERCENTAGE)
-            val messageField = TextField().apply {
-                setWidth(100F, Sizeable.Unit.PERCENTAGE)
-            }
+            val messageField = TextField().apply { setWidth(100F, Sizeable.Unit.PERCENTAGE) }
             val button = Button("Send").apply {
                 setClickShortcut(ShortcutAction.KeyCode.ENTER)
                 addClickListener {
-                    sendMessage(messageField.value)
-                    messageField.clear()
-                    messageField.focus()
+                    kafkaConnector.send(user, messageField.value)
+                    messageField.apply { clear(); focus() }
                 }
             }
             addComponents(messageField, button)
@@ -60,7 +73,7 @@ class ChatUI : UI() {
                         user = nameField.value
                         if (!user.isNullOrEmpty()) {
                             close()
-                            log.info("user entered: {}", user)
+                            log.info("user entered: $user")
                         }
                     }
                 })
@@ -69,14 +82,8 @@ class ChatUI : UI() {
         })
     }
 
-    private fun sendMessage(message: String) {
-        log.warn("{} sending message \"{}\"", user, message)
-        showMessage(user, message)
-    }
-
-    private fun showMessage(user: String, message: String) {
-        log.info("got message \"{}\" from {}", message, user)
-        chatDisplay.addMessage(user, message)
+    override fun chatMessage(user: String, message: String) {
+        access { chatDisplay.addMessage(user, message) }
     }
 
     companion object {
@@ -89,12 +96,8 @@ class ChatDisplay : Panel() {
 
     init {
         setSizeFull()
-        text = Label().apply {
-            contentMode = ContentMode.HTML
-        }
-        content = VerticalLayout().apply {
-            addComponent(text)
-        }
+        text = Label().apply { contentMode = ContentMode.HTML }
+        content = VerticalLayout().apply { addComponent(text) }
     }
 
     fun addMessage(user: String, message: String) {
