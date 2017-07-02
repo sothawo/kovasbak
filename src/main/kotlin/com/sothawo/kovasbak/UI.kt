@@ -21,14 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired
 class ChatUI : UI(), KafkaConnectorListener {
 
     lateinit var user: String
-    lateinit var chatDisplay: ChatDisplay
+    val chatDisplay = ChatDisplay()
+    val userLabel = Label()
 
     @Autowired
     lateinit var kafkaConnector: KafkaConnector
 
     override fun init(vaadinRequest: VaadinRequest?) {
         kafkaConnector.addListener(this)
-        chatDisplay = ChatDisplay()
         content = VerticalLayout().apply {
             setSizeFull()
             addComponents(chatDisplay, createInputs())
@@ -54,7 +54,8 @@ class ChatUI : UI(), KafkaConnectorListener {
                     messageField.apply { clear(); focus() }
                 }
             }
-            addComponents(messageField, button)
+            addComponents(userLabel, messageField, button)
+            setComponentAlignment(userLabel, Alignment.MIDDLE_LEFT)
             setExpandRatio(messageField, 1F)
         }
     }
@@ -73,6 +74,7 @@ class ChatUI : UI(), KafkaConnectorListener {
                         user = nameField.value
                         if (!user.isNullOrEmpty()) {
                             close()
+                            userLabel.value = user
                             log.info("user entered: $user")
                         }
                     }
