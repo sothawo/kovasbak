@@ -13,34 +13,21 @@ import org.slf4j.LoggerFactory
  */
 @SpringUI
 class ChatUI : UI() {
-    lateinit var name: String
-    lateinit var chat: TextArea
+    lateinit var user: String
+    lateinit var chatDisplay: ChatDisplay
 
     /**
-     * called to initialize the UI. adds the chat display and the input controls and asks for the user name.
+     * called to initialize the UI. adds the chat display and the input controls and asks for the user's name.
      * @param vaadinRequest ignored here
      */
     override fun init(vaadinRequest: VaadinRequest?) {
         content = VerticalLayout().apply {
-            setWidth(100F, Sizeable.Unit.PERCENTAGE)
-
-            chat = createChatDisplay()
-            addComponent(chat)
-            addComponent(createInputs())
-            askForUserName()
+            setSizeFull()
+            chatDisplay = ChatDisplay()
+            addComponents(chatDisplay, createInputs())
+            setExpandRatio(chatDisplay, 1F)
         }
-    }
-
-    /**
-     * creates the TextArea to display the chat data.
-     * @return the TextArea
-     */
-    private fun createChatDisplay(): TextArea {
-        return TextArea().apply {
-            isReadOnly = true
-            setWidth(100F, Sizeable.Unit.PERCENTAGE)
-            rows = 20
-        }
+        askForUserName()
     }
 
     /**
@@ -49,26 +36,27 @@ class ChatUI : UI() {
     private fun createInputs(): Component {
         return HorizontalLayout().apply {
             setWidth(100F, Sizeable.Unit.PERCENTAGE)
-
-            val message = TextField().apply { setWidth(100F, Sizeable.Unit.PERCENTAGE) }
-            addComponent(message)
-            setExpandRatio(message, 1F)
-
-            addComponent(Button("Send").apply {
+            val messageField = TextField().apply {
+                setWidth(100F, Sizeable.Unit.PERCENTAGE)
+            }
+            val button = Button("Send").apply {
                 setClickShortcut(ShortcutAction.KeyCode.ENTER)
                 addClickListener {
-                    sendMessage(message.value)
-                    message.clear()
+                    sendMessage(messageField.value)
+                    messageField.clear()
+                    messageField.focus()
                 }
-            })
+            }
+            addComponents(messageField, button)
+            setExpandRatio(messageField, 1F)
         }
     }
 
     /**
-     * shows a modal dialog to ask for the user name and sets the correspondig field.
+     * shows a modal dialog to ask for the user user and sets the correspondig field.
      */
     private fun askForUserName() {
-        addWindow(Window("your name:").apply {
+        addWindow(Window("your user:").apply {
             isModal = true
             isClosable = false
             isResizable = false
@@ -78,10 +66,10 @@ class ChatUI : UI() {
                 addComponent(Button("OK").apply {
                     setClickShortcut(ShortcutAction.KeyCode.ENTER)
                     addClickListener {
-                        name = nameField.value
-                        if (!name.isNullOrEmpty()) {
+                        user = nameField.value
+                        if (!user.isNullOrEmpty()) {
                             close()
-                            log.info("name entered: {}", name)
+                            log.info("user entered: {}", user)
                         }
                     }
                 })
@@ -91,11 +79,11 @@ class ChatUI : UI() {
     }
 
     /**
-     * sends the message from the input text fiueld to the backend.
+     * sends the message from the input text field to the backend.
      */
     private fun sendMessage(message: String) {
-        log.warn("{} sending message \"{}\"", name, message)
-        showMessage(name, message)
+        log.warn("{} sending message \"{}\"", user, message)
+        showMessage(user, message)
     }
 
     /**
@@ -105,7 +93,7 @@ class ChatUI : UI() {
      */
     private fun showMessage(user: String, message: String) {
         log.info("got message \"{}\" from {}", message, user)
-        chat.value += user + ": " + message + "\n"
+        chatDisplay.addMessage(user, message)
     }
 
     /**
