@@ -1,0 +1,26 @@
+version: '3'
+
+networks:
+  kovasbak:
+    driver: bridge
+
+services:
+
+  zookeeper:
+    image: kovasbak-zookeeper
+    container_name: kovasbak-zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - kovasbak
+
+  kafkabroker:
+    depends_on:
+      - zookeeper
+    image: kovasbak-kafkabroker
+    container_name: kovasbak-kafkabroker
+    command: ["--override", "zookeeper.connect=kovasbak-zookeeper:2181"]
+    ports:
+      - "9092:9092"
+    networks:
+      - kovasbak
