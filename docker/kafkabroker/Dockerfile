@@ -4,4 +4,10 @@ LABEL maintainer="<pj.meisch@sothawo.com>"
 
 EXPOSE 9092
 
-ENTRYPOINT ["bin/kafka-server-start.sh", "config/server.properties"]
+COPY ["start_kafkabroker.sh", "./"]
+
+USER root
+RUN chmod +x start_kafkabroker.sh
+USER kafka
+
+ENTRYPOINT ["./start_kafkabroker.sh"]

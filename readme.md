@@ -14,4 +14,15 @@ Just a demo to show how the language, frameworks and tools work together.
 
 ## the docker directory
 
-this directory contain the scripts that are necessary to run all components in docker 
+this directory contain the scripts that are necessary to run all components in docker, the files are for docker 
+running in swarm mode. To get it going:
+
+    cd docker
+    cd kafkabase
+    docker build -t kovasbak-kafkabase .
+    cd ../zookeeper
+    docker build -t kovasbak-zookeeper .
+    cd ../kafkabroker
+    docker build -t kovasbak-kafkabroker .
+    cd ..
+    docker stack deploy --compose-file=docker-compose.yml kovasbak

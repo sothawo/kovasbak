@@ -1,26 +1,33 @@
 version: '3'
 
+# version 3 can be used with docker stack deploy --compose-file=docker-compose.yml stack-name
+# images must be prebuilt
+
 networks:
   kovasbak:
-    driver: bridge
+    driver: overlay
 
 services:
 
   zookeeper:
     image: kovasbak-zookeeper
-    container_name: kovasbak-zookeeper
     ports:
       - "2181:2181"
     networks:
       - kovasbak
+    deploy:
+      mode: replicated
+      replicas: 1
 
   kafkabroker:
     depends_on:
       - zookeeper
     image: kovasbak-kafkabroker
-    container_name: kovasbak-kafkabroker
-    command: ["--override", "zookeeper.connect=kovasbak-zookeeper:2181"]
+    command: ["--override", "zookeeper.connect=zookeeper:2181"]
     ports:
       - "9092:9092"
     networks:
       - kovasbak
+    deploy:
+      mode: replicated
+      replicas: 1

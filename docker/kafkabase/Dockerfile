@@ -2,10 +2,11 @@ FROM frolvlad/alpine-oraclejdk8:8.131.11-slim
 
 LABEL maintainer="<pj.meisch@sothawo.com>"
 
+COPY ["ip2dec.sh", "/"]
 RUN apk add --no-cache \
     bash \
   && addgroup kafka \
-  && adduser -S -D kafka -G kafka
+  && adduser -S -D kafka -G kafka \
 
 USER kafka
 
