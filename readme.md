@@ -24,5 +24,10 @@ running in swarm mode. To get it going:
     docker build -t kovasbak-zookeeper .
     cd ../kafkabroker
     docker build -t kovasbak-kafkabroker .
-    cd ..
+    cd ../..
+    mvn package 
+    cd target
+    sh build-docker-images.sh
+    cd ../docker
     docker stack deploy --compose-file=docker-compose.yml kovasbak
+
