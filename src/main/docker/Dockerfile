@@ -11,7 +11,7 @@ USER kovasbak
 
 ADD ["@project.build.finalName@.jar", "./"]
 
-ENTRYPOINT ["java", "-jar", "@project.build.finalName@.jar", "-Djava.security.egd=file:/dev/./urandom"]
+ENTRYPOINT ["java", "-jar", "@project.build.finalName@.jar"]
 
 EXPOSE 8080
 
