@@ -11,6 +11,8 @@ services:
 
   zookeeper:
     image: kovasbak-zookeeper:latest
+    ports:
+      - "2181:2181"
     networks:
       - kovasbak
     deploy:
@@ -20,6 +22,8 @@ services:
   kafkabroker:
     image: kovasbak-kafkabroker:latest
     command: ["--override", "zookeeper.connect=zookeeper:2181"]
+    ports:
+      - "9092:9092"
     networks:
       - kovasbak
     deploy:

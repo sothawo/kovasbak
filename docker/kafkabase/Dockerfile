@@ -5,7 +5,7 @@ LABEL maintainer="<pj.meisch@sothawo.com>"
 RUN apk add --no-cache \
     bash \
   && addgroup kafka \
-  && adduser -S -D kafka -G kafka \
+  && adduser -S -D kafka -G kafka
 
 USER kafka
 

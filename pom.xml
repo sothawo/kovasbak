@@ -24,7 +24,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <kotlin.version>1.1.3</kotlin.version>
+        <kotlin.version>1.1.4-3</kotlin.version>
         <vaadin.version>8.0.6</vaadin.version>
 
         <dockerfile-maven-plugin.version>1.3.1</dockerfile-maven-plugin.version>
