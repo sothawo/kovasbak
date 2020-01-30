@@ -1,11 +1,11 @@
-FROM frolvlad/alpine-oraclejdk8:8.131.11-slim
+FROM openjdk:8-jre
 
 LABEL maintainer="<pj.meisch@sothawo.com>"
 
-RUN apk add --no-cache \
-    bash \
-  && addgroup kafka \
-  && adduser -S -D kafka -G kafka
+RUN addgroup kafka \
+  && addgroup kovasbak \
+  && adduser --disabled-login --no-create-home --disabled-login --ingroup kafka kafka \
+  && adduser --disabled-login --no-create-home --disabled-login --ingroup kovasbak kovasbak
 
 USER kafka
 
